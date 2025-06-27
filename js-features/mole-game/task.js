@@ -12,18 +12,17 @@ for (let i = 0; i < holesCounter.length; i++) {
     }
 
     if (Number(deadCounter.textContent) === 10) {
-      alert("You win!");
-      restartGame()
+      restartGame("You win!");
     }
 
     if (Number(missCounter.textContent) === 5) {
-      alert("You lose!");
-      restartGame()
+      restartGame("You lose!");
     }
   });
 }
 
-function restartGame() {
+function restartGame(message) {
+  alert(message);
   deadCounter.textContent = 0;
   missCounter.textContent = 0;
 }
