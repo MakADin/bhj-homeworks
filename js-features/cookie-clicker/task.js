@@ -15,5 +15,7 @@ cookieElement.addEventListener("click", () => {
   lastClickTime = currentTime;
 
   cookieCounter.textContent++;
-  cookieElement.width = cookieElement.width == 200 ? 250 : 200;
+  cookieElement.classList.toggle("cookie--large"); // лучше через отдельный файл css и переключать класс через toggle?
+  // или можно просто менять атрибут width напрямую ?
+  // cookieElement.width = cookieElement.width == 200 ? 250 : 200;
 });
