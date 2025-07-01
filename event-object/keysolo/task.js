@@ -4,6 +4,10 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
+    this.timerElement = container.querySelector('.timer')
+    // this.timer = container.querySelector('.timer');
+    // this.timerId = container.getElementById('timer'); //- не работает - ошибка Uncaught TypeError: container.getElementById is not a function
+    // почему не удается получить доступ по id="timer" this.timer = container.getElementById('timer');
 
     this.reset();
 
@@ -21,7 +25,7 @@ class Game {
       if (this.currentSymbol.innerText === event.key) {
         this.success();
       } else {
-        this.fail()
+        this.fail();
       }
     })
 
@@ -50,6 +54,8 @@ class Game {
       this.reset();
     }
     this.setNewWord();
+    this.startTimer();
+    // debugger;
   }
 
   fail() {
@@ -64,6 +70,33 @@ class Game {
     const word = this.getWord();
 
     this.renderWord(word);
+
+    this.startTimer(word.length);
+  }
+
+  startTimer(time) {
+    this.timerElement.textContent = time;
+    // console.log(`this.timerElement.textContent ${this.timerElement.textContent} \ntime ${time}`);
+
+
+    let intervalId = setInterval(() => {
+      // console.log(`this.timerElement.textContent ${this.timerElement.textContent} \ntime ${time}`);
+      this.timerElement.textContent = --time;
+      // console.log(`this.timerElement.textContent ${this.timerElement.textContent} \ntime ${time}`);
+
+      // console.log(intervalId);
+
+      if (time == 0) {
+        this.fail();
+        this.stopTimer(intervalId);
+      }
+    }, 1000);
+  }
+
+  stopTimer(intervalId) {
+    // console.log(intervalId);
+
+    clearInterval(intervalId);
   }
 
   getWord() {
