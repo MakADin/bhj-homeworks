@@ -2,12 +2,7 @@ const value = document.querySelector('.dropdown__value');
 const items = Array.from(document.querySelectorAll('.dropdown__item'));
 const list = document.querySelector('.dropdown__list');
 
-value.addEventListener('mouseover', addActiveClass);
-value.addEventListener('mouseout', removeActiveClass);
-
-
-list.addEventListener('mouseover', addActiveClass);
-list.addEventListener('mouseout', removeActiveClass);
+value.addEventListener('click', addActiveClass);
 
 function addActiveClass() {
   list.classList.add('dropdown__list_active');
@@ -21,6 +16,6 @@ items.forEach(item => {
   item.addEventListener('click', (event) => {
     event.preventDefault();
     value.textContent = event.target.innerText;
-    removeActiveClass()
+    removeActiveClass();
   })
 })
