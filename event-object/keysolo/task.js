@@ -4,39 +4,45 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
-    this.timerElement = container.querySelector('.timer')
+    this.timerElement = container.querySelector('.timer');
+    this.firstCorrectInput = true;
     // this.timer = container.querySelector('.timer');
     // this.timerId = container.getElementById('timer'); //- не работает - ошибка Uncaught TypeError: container.getElementById is not a function
     // почему не удается получить доступ по id="timer" this.timer = container.getElementById('timer');
-
+    this.intervalId = null;
+    // this.secondsTimer = 0;
     this.reset();
 
     this.registerEvents();
   }
 
   reset() {
+    this.stopTimer();
     this.setNewWord();
     this.winsElement.textContent = 0;
     this.lossElement.textContent = 0;
   }
 
   registerEvents() {
-    document.body.addEventListener('keydown', (event) => {
-      if (this.currentSymbol.innerText === event.key) {
+    document.body.addEventListener('keydown', (e) => {
+      const isLetterKey = /^[a-zA-Zа-яёА-ЯЁ]$/.test(e.key);
+      
+      if (!isLetterKey) {
+        e.preventDefault();
+        return;
+      }
+
+      if (this.currentSymbol.innerText.toLowerCase() === e.key) {
         this.success();
+
+        if (this.firstCorrectInput && !this.intervalId) {
+          this.startTimer();
+          this.firstCorrectInput = false;
+        }
       } else {
         this.fail();
       }
     })
-
-    /*
-      TODO:
-      Написать обработчик события, который откликается
-      на каждый введённый символ.
-      В случае правильного ввода символа вызываем this.success()
-      При неправильном вводе символа - this.fail();
-      DOM-элемент текущего символа находится в свойстве this.currentSymbol.
-     */
   }
 
   success() {
@@ -46,6 +52,9 @@ class Game {
 
     if (this.currentSymbol !== null) {
       this.currentSymbol.classList.add('symbol_current');
+      if (this.currentSymbol.textContent === ' ') {
+        this.success();
+      }
       return;
     }
 
@@ -54,8 +63,6 @@ class Game {
       this.reset();
     }
     this.setNewWord();
-    this.startTimer();
-    // debugger;
   }
 
   fail() {
@@ -71,44 +78,35 @@ class Game {
 
     this.renderWord(word);
 
-    this.startTimer(word.length);
+    this.timerElement.textContent = word.length;
+    this.firstCorrectInput = true;
   }
 
-  startTimer(time) {
-    this.timerElement.textContent = time;
-    // console.log(`this.timerElement.textContent ${this.timerElement.textContent} \ntime ${time}`);
-
-
-    let intervalId = setInterval(() => {
-      // console.log(`this.timerElement.textContent ${this.timerElement.textContent} \ntime ${time}`);
-      this.timerElement.textContent = --time;
-      // console.log(`this.timerElement.textContent ${this.timerElement.textContent} \ntime ${time}`);
-
-      // console.log(intervalId);
-
-      if (time == 0) {
+  startTimer() {
+    this.intervalId = setInterval(() => {
+      --this.timerElement.textContent;
+      if (this.timerElement.textContent <= 0) {
         this.fail();
-        this.stopTimer(intervalId);
       }
     }, 1000);
   }
 
-  stopTimer(intervalId) {
-    // console.log(intervalId);
-
-    clearInterval(intervalId);
+  stopTimer() {
+    clearInterval(this.intervalId);
+    this.intervalId = null;
   }
 
   getWord() {
     const words = [
-      'bob',
-      'awesome',
-      'netology',
-      'hello',
+      'bob marley',
+      'awesome мир',
+      'netology образование',
+      'hello Пипл',
       'kitty',
-      'rock',
+      'rock звезда',
       'youtube',
       'popcorn',
+      'Карамельный',
       'cinema',
       'love',
       'javascript'
