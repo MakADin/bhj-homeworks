@@ -1,14 +1,11 @@
-const reveal = Array.from(document.querySelectorAll('.reveal'));
+const reveals = Array.from(document.querySelectorAll('.reveal'));
 
 window.addEventListener('scroll', () => {
-  reveal.forEach(r => {
+  reveals.forEach(r => {
     const { top } = r.getBoundingClientRect();
     if (top < window.innerHeight && top > 0) {
-      console.log(top);
       r.classList.add('reveal_active');
     }
   })
 })
-
-
-
+// неправильно запушил, без ключа -u
