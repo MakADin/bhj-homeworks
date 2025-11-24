@@ -1,31 +1,52 @@
 const links = [...document.querySelectorAll('.has-tooltip')];
+let currentTooltip = null;
 
-const createTooltipDiv = (text) => {
+const createTooltipHTML = (text) => {
   const divTooltip = document.createElement('div');
   divTooltip.classList.add('tooltip');
   divTooltip.textContent = text;
   return divTooltip;
-}
+};
 
 const removeAllTooltips = () => {
-  const activeTooltips = document.querySelectorAll('.tooltip_active');
-  activeTooltips.forEach((tip) => { tip.remove() });
-}
+  const activeTooltips = [...document.querySelectorAll('.tooltip')];
+  activeTooltips.forEach((tip) => {
+    tip.remove();
+  });
+  currentTooltip = null;
+};
+
+const displayTooltip = (link, tooltip) => {
+  link.insertAdjacentElement('afterend', tooltip);
+  tooltip.classList.add('tooltip_active');
+};
+
+const switchClassActiveTooltip = () => {
+  currentTooltip.classList.toggle('tooltip_active');
+  currentTooltip = null;
+};
 
 /* Обработчик события click по ссылкам */
 
-links.forEach(link => {
+links.forEach((link) => {
   link.addEventListener('click', (event) => {
     event.preventDefault();
 
-    removeAllTooltips();
+    const titleLink = event.currentTarget.getAttribute('title');
 
-    const tooltipText = event.currentTarget.getAttribute('title');
+    if (currentTooltip !== null && currentTooltip.textContent === titleLink) {
+      switchClassActiveTooltip();
+      return;
+    }
 
-    const newTooltip = createTooltipDiv(tooltipText);
+    if (currentTooltip !== null) {
+      removeAllTooltips();
+    }
 
-    newTooltip.classList.add('tooltip_active');
+    const newTooltip = createTooltipHTML(titleLink);
+    displayTooltip(link, newTooltip);
 
-    event.currentTarget.appendChild(newTooltip);
-  })
-})
+    currentTooltip = newTooltip;
+    // console.log(Boolean(document.querySelector('.tooltip')));
+  });
+});

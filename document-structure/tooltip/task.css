@@ -3,7 +3,6 @@
 }
 
 .has-tooltip {
-  position: relative;
   color: #000;
   background: yellow;
 }
@@ -13,17 +12,12 @@
 }
 
 .tooltip {
-  position: absolute;
+  position: fixed;
   display: none;
   background: black;
   padding: 5px;
   border-radius: 5px;
   color: #fff;
-  top: calc(100% - 8px);
-  /* bottom: -30px; */
-
-  left: 0;
-  z-index: 1;
 }
 
 .tooltip_active {
