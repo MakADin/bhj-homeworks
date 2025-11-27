@@ -2,63 +2,61 @@ const taskForm = document.getElementById('tasks__form');
 const inputTask = document.getElementById('task__input');
 const buttonAddTask = document.getElementById('tasks__add');
 const taskList = document.querySelector('.tasks__list');
+let removeButtons = [...document.querySelectorAll('.task__remove')] || [];
 
-const getTaskValue = () => {
-  const taskValue = inputTask.value;
-  return taskValue;
-};
+const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
 const createTaskHTML = (text) => {
   const taskHTML = `
-    <div class="task">
-      <div class="task__title">
-        ${text}
-      </div>
-      <a href="#" class="task__remove">&times;</a>
-    </div>`;
+                <div class="task">
+                  <div class="task__title">
+                    ${text}
+                  </div>
+                  <a href="#" class="task__remove">&times;</a>
+                </div>`;
   return taskHTML;
 };
 
-// const createEventListenerRemove = () => {
-//   const removeBtn = document.querySelector('.task__remove');
-//   removeBtn.addEventListener('click', (e) => {
+const renderTasks = () => {
+  taskList.innerHTML = '';
+  tasks.forEach((taskText) => {
+    const taskElement = createTaskHTML(taskText);
+    taskList.insertAdjacentHTML('beforeend', taskElement);
+  });
+  removeButtons = [...document.querySelectorAll('.task__remove')];
+  removeButtons.forEach((button) => {
+    button.addEventListener('click', handleRemoveClick);
+  });
+};
 
-//   })
-// }
+const handleRemoveClick = (event) => {
+  event.preventDefault();
+  const index = removeButtons.indexOf(event.target);
+  tasks.splice(index, 1);
+  updateLocalStorage();
+  renderTasks();
+};
 
-/* Обработка событий click / keypress */
+const updateLocalStorage = () => {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+};
 
-buttonAddTask.addEventListener('click', (e) => {
+taskForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const taskValue = getTaskValue();
+  const taskValue = inputTask.value.trim();
 
   if (!taskValue) {
     alert('Поле ввода пустое');
+    inputTask.value = '';
     return;
   }
 
-  const taskElement = createTaskHTML(taskValue);
-  taskList.insertAdjacentHTML('beforeend', taskElement);
+  tasks.push(taskValue);
+  updateLocalStorage();
+  renderTasks();
 
-  taskList.lastElementChild
-    .querySelector('.task__remove')
-    .addEventListener('click', function (e, taskValue) {
-      e.preventDefault();
-      console.log('теперь получилось');
-      console.log(this.parentNode);
-      this.parentNode.remove();
-      alert(`Task removed`);
-    });
-
-  // createEventListenerRemove();
-
-  taskForm.reset();
+  inputTask.value = '';
 });
 
-inputTask.addEventListener('keypress', (event) => {
-  if (event.code === 'Enter') {
-    // buttonAddTask.click();
-    const taskValue = getTaskValue();
-  }
-});
+document.addEventListener('DOMContentLoaded', renderTasks);
