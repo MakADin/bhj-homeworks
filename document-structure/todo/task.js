@@ -1,62 +1,76 @@
-const taskForm = document.getElementById('tasks__form');
-const inputTask = document.getElementById('task__input');
-const buttonAddTask = document.getElementById('tasks__add');
-const taskList = document.querySelector('.tasks__list');
-let removeButtons = [...document.querySelectorAll('.task__remove')] || [];
+(function () {
+  'use strict';
 
-const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  const taskForm = document.getElementById('tasks__form');
+  const inputTask = document.getElementById('task__input');
+  const taskList = document.querySelector('.tasks__list');
 
-const createTaskHTML = (text) => {
-  const taskHTML = `
-                <div class="task">
-                  <div class="task__title">
-                    ${text}
-                  </div>
-                  <a href="#" class="task__remove">&times;</a>
-                </div>`;
-  return taskHTML;
-};
+  let nextID = 1;
+  const storedTasksJSON = localStorage.getItem('tasks');
+  const initialTasks = storedTasksJSON ? JSON.parse(storedTasksJSON) : [];
 
-const renderTasks = () => {
-  taskList.innerHTML = '';
-  tasks.forEach((taskText) => {
-    const taskElement = createTaskHTML(taskText);
-    taskList.insertAdjacentHTML('beforeend', taskElement);
-  });
-  removeButtons = [...document.querySelectorAll('.task__remove')];
-  removeButtons.forEach((button) => {
-    button.addEventListener('click', handleRemoveClick);
-  });
-};
+  const createTaskHTML = (task) => {
+    return `
+    <div class="task" data-id=${task.id}>
+      <div class="task__title">${task.text}</div>
+      <a href="#" class="task__remove">&times;</a>
+    </div>`;
+  };
 
-const handleRemoveClick = (event) => {
-  event.preventDefault();
-  const index = removeButtons.indexOf(event.target);
-  tasks.splice(index, 1);
-  updateLocalStorage();
-  renderTasks();
-};
+  const renderTasks = () => {
+    taskList.innerHTML = '';
+    initialTasks.forEach((task) => {
+      taskList.insertAdjacentHTML('beforeend', createTaskHTML(task));
+    });
+  };
 
-const updateLocalStorage = () => {
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-};
+  const handleRemoveClick = (event) => {
+    event.preventDefault();
 
-taskForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+    const targetParent = event.currentTarget.parentNode;
+    console.log(targetParent);
 
-  const taskValue = inputTask.value.trim();
+    const index = Array.from(document.querySelectorAll('.task')).indexOf(
+      targetParent
+    );
+    initialTasks.splice(index, 1);
+    updateLocalStorage();
+    renderTasks();
+  };
 
-  if (!taskValue) {
-    alert('Поле ввода пустое');
+  const updateLocalStorage = () => {
+    let maxId = Math.max(...initialTasks.map((task) => task.id), 0);
+    nextID = maxId + 1;
+    localStorage.setItem('tasks', JSON.stringify(initialTasks));
+  };
+
+  taskForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const taskValue = inputTask.value.trim();
+
+    if (!taskValue) {
+      alert('Поле ввода пустое');
+      inputTask.value = '';
+      return;
+    }
+
+    initialTasks.push({ id: nextID++, text: taskValue });
+
+    updateLocalStorage();
+    renderTasks();
+
     inputTask.value = '';
-    return;
-  }
+  });
 
-  tasks.push(taskValue);
-  updateLocalStorage();
-  renderTasks();
+  taskList.addEventListener('click', (event) => {
+    if (event.target.classList.contains('task__remove')) {
+      handleRemoveClick(event);
+    }
+  });
 
-  inputTask.value = '';
-});
-
-document.addEventListener('DOMContentLoaded', renderTasks);
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTasks();
+    updateLocalStorage();
+  });
+})();
