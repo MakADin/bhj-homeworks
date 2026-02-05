@@ -45,3 +45,19 @@
   display: block;
   text-align: center;
 }
+
+.logout {
+  display: flex;
+}
+
+.loguot_btn {
+  display: none;
+}
+
+.loguot_btn__active {
+  display: flex;
+}
+
+.header {
+  /* display: flex; */
+}

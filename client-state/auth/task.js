@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
+  const signinBlock = document.getElementById('signin');
   const formAuth = document.getElementById('signin__form');
   const welcomeBlock = document.getElementById('welcome');
   const userIDSpan = document.getElementById('user_id');
+  const logoutButton = document.getElementById('logout_btn');
 
   if (localStorage.getItem('user_id')) {
     showWelcome();
@@ -30,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         this.elements['login'].value = '';
         this.elements['password'].value = '';
 
-        showWelcome(userID);
+        showWelcome(result['user_id']);
       } else {
         alert('Неверный логин/пароль');
       }
@@ -41,10 +43,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  logoutButton.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    logout();
+  });
+
   function showWelcome(userID) {
     const currentUserID = userID || localStorage.getItem('user_id');
     userIDSpan.textContent = currentUserID;
     welcomeBlock.classList.add('welcome_active');
-    document.querySelector('.signin_active').classList.remove('signin_active');
+    logoutButton.classList.add('loguot_btn__active');
+    signinBlock.classList.remove('signin_active');
+  }
+
+  function logout() {
+    localStorage.removeItem('user_id');
+    logoutButton.classList.remove('loguot_btn__active');
+    welcomeBlock.classList.remove('welcome_active');
+    signinBlock.classList.add('signin_active');
   }
 });
